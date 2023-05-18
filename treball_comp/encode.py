@@ -27,12 +27,10 @@ def encoder (txt, n):
     for i in alpha:
         src.update({i:1})
         total+=1
-
     for i in range(0, len(txt), n):
-        total+=n
+        
         lletra = txt[i:i+n]
         
-        src.update({lletra:src[lletra]+1})
         
         d = b-a+1
         it = alpha.index(lletra)
@@ -83,6 +81,8 @@ def encoder (txt, n):
 
         print("Interval ha quedat", a, b)
         print()
+        total+=n
+        src.update({lletra:src[lletra]+1})
     
     c += '1'
     print("afegim un 1 al final i queda el codi", c)
