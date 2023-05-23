@@ -2,6 +2,7 @@ import math
 import sys
 import os
 from bitarray import bitarray
+from time import process_time
 
 def dec2binary(a, k):
     binary = bin(a)[2:]
@@ -11,8 +12,14 @@ def dec2binary(a, k):
 def list2code(a):
     c = ""
     for i in a:
-        dec = ord(i)
-        c += dec2binary(dec, 7)
+        dec = i.encode('utf-8')
+        bits = [bin(byte)[2:].zfill(8) for byte in dec]
+        print(bits, i)
+        for j in bits:
+            c += j
+        #print(c)
+    print(len(c))
+    c = dec2binary(int(len(c)/8), 16) + c
     return c
 
 def encode(txt,n):
@@ -43,10 +50,11 @@ def encode(txt,n):
             it -= 1
         b = a + math.floor(d * (p + src[lletra])/total)-1
         a = a + math.floor(d * p/total)    
+        #print(src)
         #print("Es codifica la lletra:", lletra, " i queda el subinterval", a, b)
         a_bin = dec2binary(a, k)
         b_bin = dec2binary(b, k)
-#        print("En binari:", a_bin, b_bin)
+        #print("En binari:", a_bin, b_bin)
 
         while (a_bin[0] == b_bin[0]):
             char = a_bin[0]
@@ -61,7 +69,7 @@ def encode(txt,n):
             #print ("Reescalat:", a_bin, b_bin)
             #print("codi:", c)
             if count > 0:
-              #  print("Afegits", count, "bits d'underflow")
+                #print("Afegits", count, "bits d'underflow")
                 if char == '0':
                     char = '1'
                 else:
@@ -78,8 +86,8 @@ def encode(txt,n):
                 b = b*2-2**(k-1)+1
                 a_bin = dec2binary(a, k)
                 b_bin = dec2binary(b, k)
-        #        print("Underflow num.", count)
-        #        print ("Reescalat:", a_bin, b_bin)
+                #print("Underflow num.", count)
+                #print ("Reescalat:", a_bin, b_bin)
         #print("Interval ha quedat", a, b)
         #print()
         if aux not in src:
@@ -93,9 +101,12 @@ def encode(txt,n):
     #print("afegim un 1 al final i queda el codi", c)
     code = dec2binary(len(txt), 32)
     #print("El text te una mida de ", len(txt) ,  " i el code és " + code)
-    code += dec2binary(len(alpha), 16)
+    #code += dec2binary(len(alpha), 16)
     #print("Alpha te una mida de ", len(alpha), " i és ", alpha , " i codificat és ", list2code(alpha))
-    code += list2code(alpha)
+    print (alpha)
+    alpha_bin = list2code(alpha)
+    code += alpha_bin
+    print(alpha_bin[16:])
     code += c
     #print("El codi final és " + code)
     return code
@@ -108,7 +119,9 @@ fileName = sys.argv[1]
 with open(fileName + ".txt", 'r', encoding='utf-8') as f:
     txt = f.read()
 
+t = process_time()
 encoded = encode(txt, 1)
+print("temps codificació =",process_time()-t);
 bits = bitarray(encoded)
 
 with open(os.path.splitext(fileName)[0] + ".cdi", 'wb') as f:
